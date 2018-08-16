@@ -1,6 +1,20 @@
 <?php
 
+/*********************************************************************
 
+ * playFile($fileName)
+ * playFileAsync($fileName, $callbackURL)
+ * sayNumber($number, $language)
+ * sayDigits($number, $language)
+ * hangup()
+
+ * int playFileWaitInput($fileName, $timeout, $numDigits)
+ 
+ * getCallerId()
+ * getIvrNo()
+ * getTxId()
+
+ *********************************************************************/
 class mVoice
 {
     private $clientId;
@@ -67,7 +81,10 @@ class mVoice
         $endpoint = "https://apphub.mobitel.lk/mobext/mapi/mvoice/playandwaitforinput";
         $jsonObjectFields = json_encode($data);
 
-        return $this->sendRequest($endpoint, $jsonObjectFields);
+        // response: {"status":1,"code":1000,"msg":"Success","data":{"input":"1"}}
+        $response = json_decode($this->sendRequest($endpoint, $jsonObjectFields),1);
+
+        return $response['data']['input'];
     }
 
     public function sayNumber($number, $language)
@@ -160,7 +177,7 @@ class mVoice
     private function handleResponse($resp)
     {
         if ($resp == "") {
-            return "Unknown Server Error!";
+            return json_encode(array("status" => 0, "code" => "UnknownError", "msg" => "Unsuccessful"));
         } else {
             return $resp;
         }
